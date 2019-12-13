@@ -1,0 +1,9 @@
+.gitignore      text eol=lf
+.gitattributes  text eol=lf
+
+[mM]akefile     text eol=lf
+GNUmakefile     text eol=lf
+*.[mM][dD]      text eol=lf
+*.[tT][xX][tT]  text eol=lf
+
+*.sh           text eol=lf
