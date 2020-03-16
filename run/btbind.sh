@@ -1,28 +1,19 @@
 #!/usr/bin/env bash
 
-CFG_DIR=$(eval echo "~$(logname)")
-CFG_FILE="marvin42rc"
-CFG_PATH="$CFG_DIR/$CFG_FILE"
+. "$(cd "$(dirname "$0")" && pwd)/init.sh"
 
-if [ ! -f "$CFG_PATH" ]; then
-    echo "Error: Configuration file not found: '$CFG_PATH'"
+if [ -z "$M42_BT_ADDRESS" ]; then
+    echo "Error: 'M42_BT_ADDRESS' not set"
     exit 1
 fi
 
-. "$CFG_PATH"
-
-if [ -z "$M42_BTADDRESS" ]; then
-    echo "Error: 'M42_BTADDRESS' not set"
+if [ -z "$M42_BT_DEVICE" ]; then
+    echo "Error: 'M42_BT_DEVICE' not set"
     exit 1
 fi
 
-if [ -z "$M42_BTDEVICE" ]; then
-    echo "Error: 'M42_BTDEVICE' not set"
-    exit 1
-fi
-
-if [ -z "$M42_BTCHANNEL" ]; then
-    echo "Error: 'M42_BTCHANNEL' not set"
+if [ -z "$M42_BT_CHANNEL" ]; then
+    echo "Error: 'M42_BT_CHANNEL' not set"
     exit 1
 fi
 
@@ -32,26 +23,25 @@ if [ $USER_ID -ne 0 ]; then
     exit 1
 fi
 
-DEV_PATH="/dev/rfcomm$M42_BTDEVICE"
-if [ -e "$DEV_PATH" ]; then
-    if [ ! -c "$DEV_PATH" ]; then
+if [ -e "$M42_SP_TXDEVICE" ]; then
+    if [ ! -c "$M42_SP_TXDEVICE" ]; then
         echo "Error: File already exist"
         exit 1
     fi
 
     echo "Releasing current device..."
-    rfcomm release "$M42_BTDEVICE"
+    rfcomm release "$M42_BT_DEVICE"
     if [ $? -ne 0 ]; then
-        echo "Error: Could not release device '$M42_BTDEVICE'"
+        echo "Error: Could not release device '$M42_BT_DEVICE'"
         exit 1
     fi
 fi
 
-echo "M42_BTADDRESS = $M42_BTADDRESS"
-echo "M42_BTDEVICE  = $M42_BTDEVICE"
-echo "M42_BTCHANNEL = $M42_BTCHANNEL"
+echo "M42_BT_ADDRESS    = $M42_BT_ADDRESS"
+echo "M42_BT_DEVICE     = $M42_BT_DEVICE"
+echo "M42_BT_CHANNEL    = $M42_BT_CHANNEL"
 
-rfcomm bind "$M42_BTDEVICE" "$M42_BTADDRESS" "$M42_BTCHANNEL"
+rfcomm bind "$M42_BT_DEVICE" "$M42_BT_ADDRESS" "$M42_BT_CHANNEL"
 if [ $? -ne 0 ]; then
     exit 1
 fi
