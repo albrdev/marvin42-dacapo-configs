@@ -1,3 +1,17 @@
-M42_BTADDRESS   = 00:11:22:33:44:55 # Bluetooth MAC address
-M42_BTDEVICE    = 0                 # Becomes /dev/rfcomm0
-M42_BTCHANNEL   = 1                 # Bluetooth channel
+M42_BT_ADDRESS=00:11:22:33:44:55            # Bluetooth MAC address
+M42_BT_DEVICE=0                             # Becomes /dev/rfcomm0
+M42_BT_CHANNEL=1                            # Bluetooth channel
+
+M42_SP_RXDEVICE="/dev/rfcomm$M42_BT_DEVICE" # Receiving device
+M42_SP_RXBAUDRATE=9600                      # RX baud rate
+M42_SP_RXDATABITS=8                         # RX data bits
+M42_SP_RXSTOPBITS=1                         # RX stop bits
+M42_SP_RXPARITY="SP_PARITY_NONE"            # RX parity
+M42_SP_RXFLOWCONTROL="SP_FLOWCONTROL_NONE"  # RX flow control
+
+M42_SP_TXDEVICE="/dev/ttyS0"                # Transmitting device
+M42_SP_TXBAUDRATE=9600                      # TX baud rate
+M42_SP_TXDATABITS=8                         # TX data bits
+M42_SP_TXSTOPBITS=1                         # TX stop bits
+M42_SP_TXPARITY="SP_PARITY_NONE"            # TX parity
+M42_SP_TXFLOWCONTROL="SP_FLOWCONTROL_NONE"  # TX flow control
