@@ -1,0 +1,3 @@
+M42_BTADDRESS   = 00:11:22:33:44:55 # Bluetooth MAC address
+M42_BTDEVICE    = 0                 # Becomes /dev/rfcomm0
+M42_BTCHANNEL   = 1                 # Bluetooth channel
