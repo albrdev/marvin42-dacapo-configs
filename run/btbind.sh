@@ -1,28 +1,59 @@
 #!/usr/bin/env bash
 
-ADDR_FILE="/home/pi/btaddrs"
-BT_ADDRS=()
+CFG_DIR=$(eval echo "~$(logname)")
+CFG_FILE="marvin42rc"
+CFG_PATH="$CFG_DIR/$CFG_FILE"
 
-USER_ID=$(id -u)
-
-CMD_PREFIX=""
-if [ $USER_ID -ne 0 ]; then
-    CMD_PREFIX="sudo"
+if [ ! -f "$CFG_PATH" ]; then
+    echo "Error: Configuration file not found: '$CFG_PATH'"
+    exit 1
 fi
 
-while read line; do
-    BT_ADDRS+=("$line")
-done < <(sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' "$ADDR_FILE")
+. "$CFG_PATH"
 
-for i in "${!BT_ADDRS[@]}"; do
-    echo "Attempting to bind '${BT_ADDRS[i]}' to $i"
-    CMD="$CMD_PREFIX rfcomm bind $i '${BT_ADDRS[i]}'"
-    $CMD
+if [ -z "$M42_BTADDRESS" ]; then
+    echo "Error: 'M42_BTADDRESS' not set"
+    exit 1
+fi
 
-    RET=$?
-    if [ $RET -ne 0 ]; then
+if [ -z "$M42_BTDEVICE" ]; then
+    echo "Error: 'M42_BTDEVICE' not set"
+    exit 1
+fi
+
+if [ -z "$M42_BTCHANNEL" ]; then
+    echo "Error: 'M42_BTCHANNEL' not set"
+    exit 1
+fi
+
+USER_ID=$(id -u)
+if [ $USER_ID -ne 0 ]; then
+    echo "Error: Root privileges required"
+    exit 1
+fi
+
+DEV_PATH="/dev/rfcomm$M42_BTDEVICE"
+if [ -e "$DEV_PATH" ]; then
+    if [ ! -c "$DEV_PATH" ]; then
+        echo "Error: File already exist"
         exit 1
     fi
-done
+
+    echo "Releasing current device..."
+    rfcomm release "$M42_BTDEVICE"
+    if [ $? -ne 0 ]; then
+        echo "Error: Could not release device '$M42_BTDEVICE'"
+        exit 1
+    fi
+fi
+
+echo "M42_BTADDRESS = $M42_BTADDRESS"
+echo "M42_BTDEVICE  = $M42_BTDEVICE"
+echo "M42_BTCHANNEL = $M42_BTCHANNEL"
+
+rfcomm bind "$M42_BTDEVICE" "$M42_BTADDRESS" "$M42_BTCHANNEL"
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 
 exit 0
